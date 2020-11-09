@@ -47,14 +47,14 @@
                
             while($sync["x"] -eq 1){
                 
-                Foreach ($key in $keys){
-
                     $ActiveHandle = [UserWindows]::GetForegroundWindow()        
                     $Process = Get-Process | ? {$_.MainWindowHandle -eq $activeHandle} | Select-Object -ExpandProperty ProcessName            
                     Write-Output $Process
 
+                Foreach ($key in $keys){
+
                     if ($sync["x"] -eq 1 -and $Process -eq "sro_client"){                        
-                        Start-Sleep -Milliseconds 50
+                        #Start-Sleep -Milliseconds 50
                         [System.Windows.Forms.SendKeys]::SendWait("{$key}")
                     }
                 }
