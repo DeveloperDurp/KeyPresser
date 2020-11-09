@@ -1,6 +1,6 @@
 ﻿#region Header
 
-    $Version = "1.0.1"
+    $Version = "1.0.2"
 
     #Dependencies
     [Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
@@ -8,7 +8,7 @@
     Add-Type -AssemblyName PresentationFramework
 
 
-    <#Hide Console Window
+    Hide Console Window
     Add-Type -Name Window -Namespace Console -MemberDefinition '
     [DllImport("Kernel32.dll")]
     public static extern IntPtr GetConsoleWindow();
@@ -19,8 +19,6 @@
 
     $consolePtr = [Console.Window]::GetConsoleWindow()
     [Console.Window]::ShowWindow($consolePtr, 0) > $null
-
-    #>
 
     #Talking across runspaces
     $Sync = [Hashtable]::Synchronized(@{})
