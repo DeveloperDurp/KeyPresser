@@ -8,7 +8,7 @@
     Add-Type -AssemblyName PresentationFramework
 
 
-    #Hide Console Window
+    <#Hide Console Window
     Add-Type -Name Window -Namespace Console -MemberDefinition '
     [DllImport("Kernel32.dll")]
     public static extern IntPtr GetConsoleWindow();
@@ -20,7 +20,7 @@
     $consolePtr = [Console.Window]::GetConsoleWindow()
     [Console.Window]::ShowWindow($consolePtr, 0) > $null
 
-
+    #>
 
     #Talking across runspaces
     $Sync = [Hashtable]::Synchronized(@{})
@@ -34,16 +34,31 @@
 
         $script = [Powershell]::Create().AddScript({
             Param ($Keys)
+
+            Add-Type @"
+  using System;
+  using System.Runtime.InteropServices;
+  public class UserWindows {
+    [DllImport("user32.dll")]
+    public static extern IntPtr GetForegroundWindow();
+}
+"@                
+            $keys = $keys -split ","
                
-                while($sync["x"] -eq 1){
-                    $keys = $keys -split ","
-                    Foreach ($key in $keys){
-                        if ($sync["x"] -eq 1){                        
-                            Start-Sleep -Milliseconds 500
-                            [System.Windows.Forms.SendKeys]::SendWait("{$key}")
-                        }
+            while($sync["x"] -eq 1){
+                
+                Foreach ($key in $keys){
+
+                    $ActiveHandle = [UserWindows]::GetForegroundWindow()        
+                    $Process = Get-Process | ? {$_.MainWindowHandle -eq $activeHandle} | Select-Object -ExpandProperty ProcessName            
+                    Write-Output $Process
+
+                    if ($sync["x"] -eq 1 -and $Process -eq "sro_client"){                        
+                        Start-Sleep -Milliseconds 50
+                        [System.Windows.Forms.SendKeys]::SendWait("{$key}")
                     }
                 }
+            }
         }).AddArgument($Keys)
 
         $runspace = [RunspaceFactory]::CreateRunspace()
