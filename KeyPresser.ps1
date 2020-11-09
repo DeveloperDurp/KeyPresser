@@ -38,8 +38,10 @@
                 while($sync["x"] -eq 1){
                     $keys = $keys -split ","
                     Foreach ($key in $keys){
-                        Start-Sleep -Milliseconds 500
-                        [System.Windows.Forms.SendKeys]::SendWait("{$key}")
+                        if ($sync["x"] -eq 1){                        
+                            Start-Sleep -Milliseconds 500
+                            [System.Windows.Forms.SendKeys]::SendWait("{$key}")
+                        }
                     }
                 }
         }).AddArgument($Keys)
