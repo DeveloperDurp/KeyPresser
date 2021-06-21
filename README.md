@@ -1,6 +1,9 @@
 # KeyPresser
-To use all you need to do is extract the PS1 file > Right click then click "Run with Powershell"
 
-If you get an error message about a security policy you will need to run the following command in a powershell window. 
+##### Version: 1.0.2 
 
-Set-ExecutionPolicy -ExecutionPolicy bypass
+## How to use 
+
+1. Click green "Code" button and then click download ZIP
+2. Once downloaded extract anywhere (Inside the SRO directory is the most simple)
+3. To run all you need to do is right click the Start.bat and click "Run as Administrator"
