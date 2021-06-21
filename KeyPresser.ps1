@@ -52,7 +52,7 @@
                 Foreach ($key in $keys){
 
                     if ($sync["x"] -eq 1 -and $Process -eq "sro_client"){                        
-                        #Start-Sleep -Milliseconds 50
+                        Start-Sleep -Milliseconds 150
                         [System.Windows.Forms.SendKeys]::SendWait("{$key}")
                     }
                 }
