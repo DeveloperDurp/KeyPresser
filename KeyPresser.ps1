@@ -8,7 +8,7 @@
     Add-Type -AssemblyName PresentationFramework
 
 
-    Hide Console Window
+    #Hide Console Window
     Add-Type -Name Window -Namespace Console -MemberDefinition '
     [DllImport("Kernel32.dll")]
     public static extern IntPtr GetConsoleWindow();
