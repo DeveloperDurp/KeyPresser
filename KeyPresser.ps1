@@ -1,6 +1,6 @@
-﻿#region Header
+#region Header
 
-    $Version = "1.0.2"
+    $Version = "1.0.3"
 
     #Dependencies
     [Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
@@ -12,7 +12,6 @@
     Add-Type -Name Window -Namespace Console -MemberDefinition '
     [DllImport("Kernel32.dll")]
     public static extern IntPtr GetConsoleWindow();
-
     [DllImport("user32.dll")]
     public static extern bool ShowWindow(IntPtr hWnd, Int32 nCmdShow);
     '
@@ -28,10 +27,8 @@
 
 #region Functions
     Function Keypress {
-        Param ([string]$Keys)
 
         $script = [Powershell]::Create().AddScript({
-            Param ($Keys)
 
             Add-Type @"
   using System;
@@ -41,23 +38,26 @@
     public static extern IntPtr GetForegroundWindow();
 }
 "@                
-            $keys = $keys -split ","
+            $keys = $sync["KeysTextBox"].text -split ","
+            $delay = $sync["delayTextBox"].text
+            $client = $sync["clienttextbox"].text
                
             while($sync["x"] -eq 1){
                 
                     $ActiveHandle = [UserWindows]::GetForegroundWindow()        
                     $Process = Get-Process | ? {$_.MainWindowHandle -eq $activeHandle} | Select-Object -ExpandProperty ProcessName            
                     Write-Output $Process
+                    Write-output $delay
 
                 Foreach ($key in $keys){
 
-                    if ($sync["x"] -eq 1 -and $Process -eq "sro_client"){                        
-                        Start-Sleep -Milliseconds 150
+                    if ($sync["x"] -eq 1 -and $Process -eq $client){                        
+                        Start-Sleep -Milliseconds $delay
                         [System.Windows.Forms.SendKeys]::SendWait("{$key}")
                     }
                 }
             }
-        }).AddArgument($Keys)
+        })
 
         $runspace = [RunspaceFactory]::CreateRunspace()
         $runspace.ApartmentState = "STA"
@@ -90,6 +90,7 @@
     $KeysTextBox = New-Object 'System.Windows.Forms.TextBox'
     $KeysTextBox.Location = New-Object System.Drawing.Point(5,25)
     $KeysTextBox.Width = '425'
+    $sync["KeysTextBox"] = $KeysTextBox
     $form.controls.add($KeysTextBox)
 
     $KeysButton = New-Object 'System.Windows.Forms.Button'
@@ -100,16 +101,41 @@
         if ($KeysButton.text -ne "Stop"){
             $KeysButton.text = "Stop"
             $sync["x"] = 1
-            $Keys = $KeysTextBox.text
-            Keypress $Keys
+            Keypress
         }
         Else{
             $KeysButton.text = "Start"
             $sync["x"] = 0
         }
 
-    })
+    })    
     $form.controls.add($KeysButton)
+
+    $delayLabel = New-Object 'System.Windows.Forms.Label'
+    $delayLabel.text = "Delay in milliseconds"
+    $delayLabel.Width = '110'
+    $delayLabel.Location = New-Object System.Drawing.Point(85,50)
+    $form.controls.add($delayLabel)
+
+    $delayTextBox = New-Object 'System.Windows.Forms.TextBox'
+    $delayTextBox.Location = New-Object System.Drawing.Point(195,45)
+    $delayTextBox.Width = '30'
+    $delayTextBox.text = "150"
+    $sync["delayTextBox"] = $delayTextBox
+    $form.controls.add($delayTextBox)
+
+    $clientLabel = New-Object 'System.Windows.Forms.Label'
+    $clientLabel.text = "client name"
+    $clientLabel.Width = '70'
+    $clientLabel.Location = New-Object System.Drawing.Point(235,50)
+    $form.controls.add($clientLabel)
+
+    $clientTextBox = New-Object 'System.Windows.Forms.TextBox'
+    $clientTextBox.Location = New-Object System.Drawing.Point(305,45)
+    $clientTextBox.Width = '100'
+    $clientTextBox.text = "sro_client"
+    $sync["clienttextbox"] = $clientTextBox
+    $form.controls.add($clientTextBox)
 
 #endregion Form
 
