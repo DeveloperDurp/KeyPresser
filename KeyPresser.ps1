@@ -1,6 +1,6 @@
 #region Header
 
-    $Version = "1.0.3"
+    $Version = "1.0.4"
 
     #Dependencies
     [Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
@@ -43,12 +43,12 @@
             $client = $sync["clienttextbox"].text
                
             while($sync["x"] -eq 1){
-                
+                if ($client -ne ""){
                     $ActiveHandle = [UserWindows]::GetForegroundWindow()        
                     $Process = Get-Process | ? {$_.MainWindowHandle -eq $activeHandle} | Select-Object -ExpandProperty ProcessName            
                     Write-Output $Process
                     Write-output $delay
-
+                }else{$process = $client}
                 Foreach ($key in $keys){
 
                     if ($sync["x"] -eq 1 -and $Process -eq $client){                        
