@@ -5,8 +5,8 @@
 ## How to use 
 
 #PS1
-1. Open a powershell window as Administrator
+1. Open a powershell window
 2. Run the following command 
-   * Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/DeveloperDurp/KeyPresser/main/KeyPresser.ps1'))
+   * Start-Process Powershell -Verb runAs -ArgumentList "-Command Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/DeveloperDurp/KeyPresser/main/KeyPresser.ps1'))" 
 
 3. Enjoy
