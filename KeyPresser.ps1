@@ -1,6 +1,30 @@
 #region Header
 
-    $Version = "1.0.4"
+    $Version = "1.0.5"
+
+    $appdatapath = "$env:APPDATA\DeveloperDurp\KeyPresser"
+    $configpath = "$appdatapath\config.json"
+
+    #Check for config file
+    $KeypresserPath = Test-Path $appdatapath
+    if($KeypresserPath -eq $false){
+
+        New-Item -Path $appdatapath -ItemType Directory
+
+    }
+
+    #checking for config file
+    $configfile = Test-Path $configpath
+    if($configfile -eq $false){
+
+        $json = @{
+
+            text = "1,2,3,4"
+            client ="sro_client"
+            delay ="150"
+        }
+
+    }else{$json = Get-Content $configpath | ConvertFrom-Json}
 
     #Dependencies
     [Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
@@ -90,6 +114,7 @@
     $KeysTextBox = New-Object 'System.Windows.Forms.TextBox'
     $KeysTextBox.Location = New-Object System.Drawing.Point(5,25)
     $KeysTextBox.Width = '425'
+    $KeysTextBox.text = $json.text
     $sync["KeysTextBox"] = $KeysTextBox
     $form.controls.add($KeysTextBox)
 
@@ -98,6 +123,14 @@
     $KeysButton.text = "Start"
     $KeysButton.add_click({
 
+            $json = @{
+
+                text = $sync["KeysTextBox"].text
+                delay = $sync["delayTextBox"].text
+                client = $sync["clienttextbox"].text
+
+            } | ConvertTo-Json | Out-File $configpath
+            
         if ($KeysButton.text -ne "Stop"){
             $KeysButton.text = "Stop"
             $sync["x"] = 1
@@ -120,7 +153,7 @@
     $delayTextBox = New-Object 'System.Windows.Forms.TextBox'
     $delayTextBox.Location = New-Object System.Drawing.Point(195,45)
     $delayTextBox.Width = '30'
-    $delayTextBox.text = "150"
+    $delayTextBox.text = $json.delay
     $sync["delayTextBox"] = $delayTextBox
     $form.controls.add($delayTextBox)
 
@@ -133,7 +166,7 @@
     $clientTextBox = New-Object 'System.Windows.Forms.TextBox'
     $clientTextBox.Location = New-Object System.Drawing.Point(305,45)
     $clientTextBox.Width = '100'
-    $clientTextBox.text = "sro_client"
+    $clientTextBox.text = $json.client
     $sync["clienttextbox"] = $clientTextBox
     $form.controls.add($clientTextBox)
 
